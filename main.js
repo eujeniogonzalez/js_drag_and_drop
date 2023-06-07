@@ -7,10 +7,12 @@ const draggableItems = container.querySelectorAll(`.${CSS_DRAGGABLE_ITEM_CLASS_N
 
 let dragOverItem = null;
 let notDraggingItems = null;
+let firstExcludedIndex = null;
+let currentExcludedIndex = null;
 
 for (let i = 0; i < items.length; i++) {
     draggableItems[i].addEventListener('dragstart', (e) => draggableItemDragStartHandler(e, i));
-    draggableItems[i].addEventListener('dragend', () => draggableItemDragEndHandler(i));
+    draggableItems[i].addEventListener('dragend', (e) => draggableItemDragEndHandler(e, i));
 
     items[i].addEventListener('dragover', itemDragOverHandler);
     items[i].addEventListener('drop', itemDropHandler);
@@ -40,6 +42,13 @@ function rerenderItems(excludedIndex) {
 function isElementDragging(element) {
     return element.classList.contains(CSS_DRAGGING_CLASS_NAME);
 }
+
+function resetDragData() {
+    dragOverItem = null;
+    notDraggingItems = null;
+    firstExcludedIndex = null;
+    currentExcludedIndex = null;
+}
 // Helpers (end)
 
 // Handlers (start)
@@ -48,7 +57,13 @@ function draggableItemDragStartHandler(e, i) {
     setTimeout(() => draggableItems[i].classList.add(CSS_DRAGGING_CLASS_NAME));
 }
 
-function draggableItemDragEndHandler(i) {
+function draggableItemDragEndHandler(e, i) {
+    const dropEffect = e.dataTransfer.dropEffect;
+
+    if (dropEffect === 'none') {
+        rerenderItems(firstExcludedIndex);
+    }
+
     draggableItems[i].classList.remove(CSS_DRAGGING_CLASS_NAME);
 }
 
@@ -63,8 +78,13 @@ function itemDragOverHandler(e) {
 
     notDraggingItems = Array.from(container.querySelectorAll(`.${CSS_DRAGGABLE_ITEM_CLASS_NAME}:not(.${CSS_DRAGGING_CLASS_NAME})`));
 
-    const excludedIndex = Array.from(items).indexOf(dragOverItem);
-    rerenderItems(excludedIndex);
+    const currentExcludedIndex = Array.from(items).indexOf(dragOverItem);
+
+    if (firstExcludedIndex === null && currentExcludedIndex !== -1) {
+        firstExcludedIndex = currentExcludedIndex;
+    }
+
+    rerenderItems(currentExcludedIndex);
 }
 
 function itemDropHandler(e) {
@@ -73,7 +93,6 @@ function itemDropHandler(e) {
 
     e.target.append(draggingElement);
 
-    dragOverItem = null;
-    notDraggingItems = null;
+    resetDragData();
 }
 // Handlers (end)
