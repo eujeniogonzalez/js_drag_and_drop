@@ -19,6 +19,17 @@ for (let i = 0; i < items.length; i++) {
 }
 
 // Helpers (start)
+function fixItemsSize() {
+    items.forEach((item) => {
+        const styles = window.getComputedStyle(item);
+        const width = styles.width;
+        const height = styles.height;
+
+        item.style.width = width;
+        item.style.height = height;
+    });
+}
+
 function rerenderItems(excludedIndex) {
     if (excludedIndex === -1) {
         return;
@@ -49,10 +60,16 @@ function resetDragData() {
     firstExcludedIndex = null;
     currentExcludedIndex = null;
 }
+
+function getCurrentExcludedIndex(items, dragOverItem) {
+    return items.indexOf(dragOverItem) === -1 ? items.indexOf(dragOverItem.parentNode) : items.indexOf(dragOverItem);
+}
 // Helpers (end)
 
 // Handlers (start)
 function draggableItemDragStartHandler(e, i) {
+    fixItemsSize();
+
     e.dataTransfer.setData('id', e.target.id);
     setTimeout(() => draggableItems[i].classList.add(CSS_DRAGGING_CLASS_NAME));
 }
@@ -78,7 +95,7 @@ function itemDragOverHandler(e) {
 
     notDraggingItems = Array.from(container.querySelectorAll(`.${CSS_DRAGGABLE_ITEM_CLASS_NAME}:not(.${CSS_DRAGGING_CLASS_NAME})`));
 
-    const currentExcludedIndex = Array.from(items).indexOf(dragOverItem);
+    currentExcludedIndex = getCurrentExcludedIndex(Array.from(items), dragOverItem);
 
     if (firstExcludedIndex === null && currentExcludedIndex !== -1) {
         firstExcludedIndex = currentExcludedIndex;

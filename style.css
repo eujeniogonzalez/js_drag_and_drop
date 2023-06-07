@@ -16,7 +16,7 @@ body {
 }
 
 .container {
-  width: 600px;
+  width: 400px;
   padding: 20px;
   min-height: 200px;
   background-color: tomato;
@@ -25,15 +25,15 @@ body {
   align-items: center;
   flex-wrap: wrap;
   border-radius: 10px;
-  gap: 5px;
+  gap: 15px;
 }
 
 .item {
   background-color: aquamarine;
-  padding: 15px;
+  /* padding: 15px; */
   border-radius: 5px;
-  width: 210px;
-  height: 150px;
+  /* width: 210px; */
+  /* height: 150px; */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -41,7 +41,7 @@ body {
 
 .draggable-item {
   background-color: violet;
-  padding: 15px;
+  /* padding: 15px; */
   border-radius: 5px;
   display: flex;
   justify-content: center;
